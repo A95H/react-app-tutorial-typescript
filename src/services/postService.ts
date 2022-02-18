@@ -1,7 +1,7 @@
 import ApiService from './apiService';
 import Post from '../models/postModel';
 
-class PostService extends ApiService<Post, Post, any, any> {
+class PostService extends ApiService<Post, Post, any, boolean> {
     endpoint = 'posts';
 
     fromJson(data: any): Post {
@@ -16,8 +16,8 @@ class PostService extends ApiService<Post, Post, any, any> {
     fromJsonUpdate(data: any) {
         throw new Error('Method not implemented.');
     }
-    fromJsonDelete(data: any) {
-        throw new Error('Method not implemented.');
+    fromJsonDelete(status: number, data?: any): boolean {
+        return status === 204 || status === 200;
     }
 }
 

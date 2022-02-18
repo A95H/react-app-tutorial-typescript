@@ -3,6 +3,7 @@ class Post {
     body: string;
     id?: number;
     userId?: number;
+    deleting: boolean = false;
 
     constructor({ title, body, id, userId }: { title: string; body: string; id?: number; userId?: number }) {
         this.title = title;

@@ -28,10 +28,20 @@ abstract class ApiService<T, CreateResponse, UpdateResponse, DeleteResponse> {
         }
     }
 
+    async delete(id: String, endpoint?: string): Promise<DeleteResponse> {
+        this.endpoint = endpoint ?? this.endpoint;
+        var res = await axios.delete(this.baseUrl + this.endpoint + '/' + id ?? '', { headers: this.headers });
+        if (res.status === 200) {
+            return this.fromJsonDelete(res.status, res.data);
+        } else {
+            throw new Error(res.statusText);
+        }
+    }
+
     abstract fromJson(data: any): T;
     abstract fromJsonArray(data: any): T[];
     abstract fromJsonCreate(data: any): CreateResponse;
     abstract fromJsonUpdate(data: any): UpdateResponse;
-    abstract fromJsonDelete(data: any): DeleteResponse;
+    abstract fromJsonDelete(status: number, data?: any): DeleteResponse;
 }
 export default ApiService;
