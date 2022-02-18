@@ -1,6 +1,4 @@
-import MasterModel from './masterModel';
-
-class Post implements MasterModel<Post> {
+class Post {
     title: string;
     body: string;
     id?: number;
