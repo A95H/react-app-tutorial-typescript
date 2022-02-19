@@ -30,6 +30,21 @@ const PostsPage: FunctionComponent<PostsPageProps> = () => {
         }
     }
 
+    function handleChange(event: React.ChangeEvent<any>) {
+        var post = newPost.clone();
+        var fieldName = event.currentTarget.name;
+        if (fieldName === "title") {
+            post.title = event.currentTarget.value;
+        }
+        if (fieldName === "body") {
+            post.body = event.currentTarget.value;
+        }
+        if (fieldName === "userId") {
+            post.userId = parseInt(event.currentTarget.value);
+        }
+        setNewPost(post);
+    }
+
     async function handleCreatePost(): Promise<void> {
         if (newPost.title && newPost.body) {
             setIsAdding(true);
@@ -52,41 +67,25 @@ const PostsPage: FunctionComponent<PostsPageProps> = () => {
         });
     }, []);
 
-    if (isLoading) {
-        return <h1>Loading...</h1>
-    }
     return (
         <div>
             <h1>PostsPage</h1>
             <div className="container" >
                 <div className="row">
                     <div className="col" >
-                        <input type="text" placeholder="Title" value={newPost.title ?? ""} onChange={(e) => {
-                            var post = newPost.clone();
-                            post.title = e.currentTarget.value;
-                            setNewPost(post);
-                        }} />
+                        <input type="text" placeholder="Title" name="title" value={newPost.title ?? ""} onChange={handleChange} />
                     </div>
                 </div>
                 <br />
                 <div className="row">
                     <div className="col" >
-                        <textarea placeholder="Body" value={newPost.body ?? ""} onChange={(e) => {
-                            var post = newPost.clone();
-                            post.body = e.currentTarget.value;
-                            setNewPost(post);
-                        }} />
-
+                        <textarea placeholder="Body" name="body" value={newPost.body ?? ""} onChange={handleChange} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col">
                         UserId :
-                        <select name="userId" id="userId" onChange={(e) => {
-                            var post = newPost.clone();
-                            post.userId = parseInt(e.currentTarget.value);
-                            setNewPost(post);
-                        }} >
+                        <select name="userId" id="userId" onChange={handleChange} >
                             <option value="1">1</option>
                             <option value="2">2</option>
                         </select>
@@ -94,11 +93,10 @@ const PostsPage: FunctionComponent<PostsPageProps> = () => {
                 </div>
                 <div className="row">
                     <div className="col" >
-                        {/* // create button */}
                         <button className="btn btn-primary" disabled={isAdding} onClick={handleCreatePost} >Create</button>
                     </div>
                 </div>
-
+                {isLoading && <h1>Loading...</h1>}
                 <table className="table">
                     <thead>
                         <tr>
