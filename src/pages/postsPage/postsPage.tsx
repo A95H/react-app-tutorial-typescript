@@ -1,4 +1,5 @@
 import React, { FunctionComponent, useEffect, useReducer, useState } from "react";
+import { Link } from "react-router-dom";
 import Post from "../../models/postModel";
 import PostService from '../../services/postService';
 
@@ -111,7 +112,11 @@ const PostsPage: FunctionComponent<PostsPageProps> = () => {
                         {
                             posts.map((item) => (
                                 <tr key={item.id ?? Date.now()}>
-                                    <td>{item.id}</td>
+                                    <td>
+                                        <Link to={"/post/" + item.id}>
+                                            {item.id}
+                                        </Link>
+                                    </td>
                                     <td>{item.title}</td>
                                     <td>{item.body}</td>
                                     <td>{item.userId}</td>
