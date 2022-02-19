@@ -1,11 +1,11 @@
 class Post {
-    title: string;
-    body: string;
+    title?: string;
+    body?: string;
     id?: number;
     userId?: number;
     deleting: boolean = false;
 
-    constructor({ title, body, id, userId }: { title: string; body: string; id?: number; userId?: number }) {
+    constructor({ title, body, id, userId }: { title?: string; body?: string; id?: number; userId?: number }) {
         this.title = title;
         this.body = body;
         this.id = id;
@@ -26,6 +26,15 @@ class Post {
 
     toJson(): Map<String, any> {
         throw new Error('Method not implemented.');
+    }
+
+    clone() {
+        return new Post({
+            title: this.title,
+            body: this.body,
+            id: this.id,
+            userId: this.userId,
+        });
     }
 }
 export default Post;

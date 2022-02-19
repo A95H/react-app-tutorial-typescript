@@ -11,7 +11,7 @@ class PostService extends ApiService<Post, Post, any, boolean> {
         return Post.fromJsonArray(data);
     }
     fromJsonCreate(data: any): Post {
-        throw new Error('Method not implemented.');
+        return Post.fromJson(data);
     }
     fromJsonUpdate(data: any) {
         throw new Error('Method not implemented.');

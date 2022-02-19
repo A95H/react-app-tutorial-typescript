@@ -1,5 +1,4 @@
-import axios, { Axios } from "axios";
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect, useReducer, useState } from "react";
 import Post from "../../models/postModel";
 import PostService from '../../services/postService';
 
@@ -9,8 +8,11 @@ interface PostsPageProps { }
 
 
 const PostsPage: FunctionComponent<PostsPageProps> = () => {
+    const [newPost, setNewPost] = useState(new Post({}));
+
     const [posts, setPosts] = React.useState<Post[]>([]);
     const [isLoading, setIsLoading] = React.useState(false);
+    const [isAdding, setIsAdding] = React.useState(false);
     const postService = new PostService();
 
     async function handleDeletePost(id: number | undefined): Promise<void> {
@@ -28,6 +30,20 @@ const PostsPage: FunctionComponent<PostsPageProps> = () => {
         }
     }
 
+    async function handleCreatePost(): Promise<void> {
+        if (newPost.title && newPost.body) {
+            setIsAdding(true);
+            var _createdPost = await postService.create(newPost);
+            if (_createdPost != null) {
+                _createdPost.id = posts.length + 1;
+                console.log(_createdPost)
+                setPosts([_createdPost, ...posts]);
+                setNewPost(new Post({}))
+            }
+            setIsAdding(false);
+        }
+    }
+
     useEffect(() => {
         setIsLoading(true);
         postService.getAll().then(posts => {
@@ -42,30 +58,72 @@ const PostsPage: FunctionComponent<PostsPageProps> = () => {
     return (
         <div>
             <h1>PostsPage</h1>
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Title</th>
-                        <th>Body</th>
-                        <th>UserId</th>
-                        <th>delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        posts.map((item) => (
-                            <tr key={item.id}>
-                                <td>{item.id}</td>
-                                <td>{item.title}</td>
-                                <td>{item.body}</td>
-                                <td>{item.userId}</td>
-                                <td><button className="btn btn-danger" disabled={item.deleting} onClick={() => handleDeletePost(item.id)}>Delete</button></td>
-                            </tr>
-                        ))
-                    }
-                </tbody>
-            </table>
+            <div className="container" >
+                <div className="row">
+                    <div className="col" >
+                        <input type="text" placeholder="Title" value={newPost.title ?? ""} onChange={(e) => {
+                            var post = newPost.clone();
+                            post.title = e.currentTarget.value;
+                            setNewPost(post);
+                        }} />
+                    </div>
+                </div>
+                <br />
+                <div className="row">
+                    <div className="col" >
+                        <textarea placeholder="Body" value={newPost.body ?? ""} onChange={(e) => {
+                            var post = newPost.clone();
+                            post.body = e.currentTarget.value;
+                            setNewPost(post);
+                        }} />
+
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col">
+                        UserId :
+                        <select name="userId" id="userId" onChange={(e) => {
+                            var post = newPost.clone();
+                            post.userId = parseInt(e.currentTarget.value);
+                            setNewPost(post);
+                        }} >
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col" >
+                        {/* // create button */}
+                        <button className="btn btn-primary" disabled={isAdding} onClick={handleCreatePost} >Create</button>
+                    </div>
+                </div>
+
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Title</th>
+                            <th>Body</th>
+                            <th>UserId</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            posts.map((item) => (
+                                <tr key={item.id ?? Date.now()}>
+                                    <td>{item.id}</td>
+                                    <td>{item.title}</td>
+                                    <td>{item.body}</td>
+                                    <td>{item.userId}</td>
+                                    <td><button className="btn btn-danger" disabled={item.deleting} onClick={() => handleDeletePost(item.id)}>Delete</button></td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }
