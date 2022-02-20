@@ -40,17 +40,8 @@ const PostsPage: FunctionComponent<PostsPageProps> = () => {
 
     function handleChange(event: React.ChangeEvent<any>) {
         var post = newPost.clone();
-        var fieldName = event.currentTarget.name;
-        if (fieldName === "title") {
-            post.title = event.currentTarget.value;
-        }
-        if (fieldName === "body") {
-            post.body = event.currentTarget.value;
-        }
-        if (fieldName === "userId") {
-            post.userId = parseInt(event.currentTarget.value);
-        }
-        setNewPost(post);
+        var object = Object.assign(post, { [event.currentTarget.name]: event.currentTarget.value });
+        setNewPost(object);
     }
 
     async function handleCreatePost(): Promise<void> {
