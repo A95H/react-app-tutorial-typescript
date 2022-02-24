@@ -2,10 +2,11 @@ import React, { FunctionComponent, useEffect, useReducer, useState } from "react
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { AddToFavoriteAction, RemoveFromFavoriteAction } from "../../actions/postFavoriteAction";
+import GenericForm, { InputType } from "../../components/genericFormComponent";
+import Input from "../../components/inputComponent";
 import Post from "../../models/postModel";
 import PostService from '../../services/postService';
-import { FavoriteReducer } from '../../reducers/favoriteReducer';
-import { AppState } from "../../reducers";
+import Validators from "../../validators/validators";
 
 interface PostsPageProps { }
 
@@ -38,19 +39,13 @@ const PostsPage: FunctionComponent<PostsPageProps> = () => {
         }
     }
 
-    function handleChange(event: React.ChangeEvent<any>) {
-        var post = newPost.clone();
-        var object = Object.assign(post, { [event.currentTarget.name]: event.currentTarget.value });
-        setNewPost(object);
-    }
-
-    async function handleCreatePost(): Promise<void> {
-        if (newPost.title && newPost.body) {
+    async function handleSubmit(post: any): Promise<void> {
+        console.log(post)
+        if (post.title && post.body) {
             setIsAdding(true);
-            var _createdPost = await postService.create(newPost);
+            var _createdPost = await postService.create(post);
             if (_createdPost != null) {
                 _createdPost.id = posts.length + 1;
-                console.log(_createdPost)
                 setPosts([_createdPost, ...posts]);
                 setNewPost(new Post({}))
             }
@@ -84,29 +79,96 @@ const PostsPage: FunctionComponent<PostsPageProps> = () => {
         <div>
             <h1>PostsPage</h1>
             <div className="container" >
-                <div className="row">
-                    <div className="col" >
-                        <input type="text" placeholder="Title" name="title" value={newPost.title ?? ""} onChange={handleChange} />
-                    </div>
-                </div>
+                <GenericForm
+                    onSubmit={handleSubmit}
+                    model={newPost}
+                    inputs={
+                        [
+                            {
+                                propName: "title",
+                                inputType: InputType.textField,
+                                label: "Title",
+                                id: "aa",
+                                type: "email",
+                                validations: [Validators.emailValidator],
+                                placeholder: "Title",
+                            },
+                            {
+                                propName: "body",
+                                inputType: InputType.textField,
+                                label: "Body",
+                                id: "bb",
+                                placeholder: "Body",
+                            },
+                            {
+                                propName: "userId",
+                                inputType: InputType.textField,
+                                label: "UserID",
+                                id: "UserID",
+                                type: "number",
+                                numberOptions: {
+                                    min: 1,
+                                    max: 10,
+                                },
+                                placeholder: "UserID",
+                            },
+                            {
+                                id: "ww",
+                                propName: "gender",
+                                inputType: InputType.dropdown,
+                                values: [
+                                    {
+                                        displayText: "Male",
+                                        value: "male"
+                                    },
+                                    {
+                                        displayText: "Female",
+                                        value: "female"
+                                    },
+                                ],
+                            },
+                            {
+                                id: "rr",
+                                propName: "userType",
+                                inputType: InputType.radioButton,
+                                values: [
+                                    {
+                                        displayText: "Admin",
+                                        value: "admin"
+                                    },
+                                    {
+                                        displayText: "User",
+                                        value: "user"
+
+                                    }
+                                ],
+                            },
+                            {
+                                id: "qa",
+                                propName: "hobbies",
+                                inputType: InputType.checkbox,
+                                values: [
+                                    {
+                                        displayText: "Football",
+                                        value: "football"
+                                    },
+                                    {
+                                        displayText: "Drawing",
+                                        value: "draw"
+                                    },
+                                    {
+                                        displayText: "Running",
+                                        value: "run"
+                                    }
+                                ],
+                            }
+
+                        ]
+                    }
+                />
                 <br />
                 <div className="row">
                     <div className="col" >
-                        <textarea placeholder="Body" name="body" value={newPost.body ?? ""} onChange={handleChange} />
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col">
-                        UserId :
-                        <select name="userId" id="userId" onChange={handleChange} >
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                        </select>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col" >
-                        <button className="btn btn-primary" disabled={isAdding} onClick={handleCreatePost} >Create</button>
                     </div>
                 </div>
                 {isLoading && <h1>Loading...</h1>}
