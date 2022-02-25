@@ -5,11 +5,18 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter } from 'react-router-dom';
-import { createStore } from 'redux';
+import { compose, createStore } from 'redux';
 import allReducers from './reducers';
 import { Provider } from 'react-redux';
 
-var myStore = createStore(allReducers);
+declare global {
+  interface Window {
+    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
+  }
+}
+const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] as typeof compose || compose;
+
+var myStore = createStore(allReducers, {}, composeEnhancers());
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={myStore}>
